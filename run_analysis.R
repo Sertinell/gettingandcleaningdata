@@ -45,11 +45,14 @@ levels(fulldata$activity) <- tolower(sub("_", "", activitylabels$V2))
 #rename names and drop columns
 columnswanted <- names(fulldata)[grep('(mean|std)\\(\\)', x = names(fulldata))]
 fulldata <- fulldata[,c(columnswanted, "activity", "subject"), with = FALSE]
+namesTable <- copy(names(fulldata))
 names(fulldata) <- tolower(gsub('(-|\"|,|\\(|\\))', "", names(fulldata)))
-
+namesTable <- data.frame(old=namesTable, new=names(fulldata))
 #group by activity and subject
 library(dplyr)
 groupeddata <- group_by(fulldata, subject, activity)
 tidydata <- groupeddata %>% summarise_each(funs(mean))
 
+setwd("../")
 write.table(tidydata, row.names = FALSE, col.names = TRUE, file = "tidydata.txt")
+write.table(namesTable, row.names = FALSE, col.names = FALSE, file = "colnames.txt")
